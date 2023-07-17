@@ -1,0 +1,21 @@
+
+
+
+{% extends 'base.html' %}
+
+{% block head %}
+ <title>Moja pierwsza strona</title>
+ <h1>My first register page</h1>
+
+{% endblock %}
+{% block body %}
+
+<form action="login" method="POST">
+<p><input type = "submit" value = "Sign In" name = Log></p>
+</form>
+
+<form action="registration" method="POST">
+    <p><input type = "submit" value = "Sign Up" name = Registration></p>
+</form>
+    
+{% endblock %}
