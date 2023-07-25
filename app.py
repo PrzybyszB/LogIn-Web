@@ -53,6 +53,9 @@ def registration():
         db.session.add(r_usr)
         db.session.commit()
 
+#TODO  próba zrobienia zeby wyswietlało liste zarejestrowanych ludzi chyba db ogarniete
+
+
         return redirect(url_for("r_user", r_usr = r_user))
     else:
         user_list = users.query.order_by(users._id)
@@ -75,4 +78,4 @@ if __name__ == "__main__":
 
 
 
-#TODO DB ogarnac z rejestracja i logownaiem
+#TODO , próba zrobienia zeby wyswietlało liste zarejestrowanych ludzi
