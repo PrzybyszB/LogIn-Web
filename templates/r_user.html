@@ -2,6 +2,7 @@
 
 {% block head %}
 
+
 <title>HELLO {{r_user}} ! </title>
 
 <h1>Hello {{r_user}}</h1>
@@ -15,7 +16,7 @@
 
 {% for users in user_list  %}
 
-<h4>chuj {{ users.name }}</h4>
+<h4>{{ users.name }}</h4>
 
 {% endfor %}
 {% endblock %}
