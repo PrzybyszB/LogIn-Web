@@ -12,6 +12,10 @@ login_manager = LoginManager(app)
 
 db = SQLAlchemy(app)
 
+@login_manager.user_loader
+def load_user(user):
+    return users.query.get(int(user))
+
 class users(db.Model, UserMixin): 
     u_id = db.Column("id", db.Integer, primary_key=True)
     r_user = db.Column (db.String(100), nullable = False)
@@ -32,21 +36,29 @@ def index():
     return render_template('index.html')
 
 
-
+#TODO zmienic login na email i logowac sie tylko i wylacznie za pomocą maila, wyjebać ten login w pizdu
 @app.route('/login', methods = ["POST", "GET"])
 def login():
     if request.method == "POST": 
         email = request.form.get('email')
         password = request.form.get('password')                            
         user = users.query.filter_by(email=email).first()
-        return redirect(url_for("user", usr = user))
+        if user:
+            if password == users.password:
+                flash("Logged in succesfully", category ='success')
+                return redirect(url_for("user"))
+            else:
+                flash("Incorrect password, try again", category="error")
+        else:
+            flash('Email does not exist', category="error")
+        return redirect(url_for("login"))
     else:
         return render_template("login.html")
             
 
-@app.route("/<usr>")                                            
-def user(usr):
-    return render_template("user.html", user = usr)
+@app.route("/user")                                            
+def user():
+    return render_template("user.html")
 
 
     
@@ -57,15 +69,25 @@ def registration():
         password = request.form.get("password")
         email = request.form.get("email")
         user = users.query.filter_by(email=email).first()
-        new_user = users(email=email, r_user = r_user, password=password)
+        if user:
+            flash("Email already exists.", category='error')
+        elif len(email) < 4:
+            flash("Email must be greater than 1 character", category="error")
+        elif len(r_user) < 2:
+            flash('First name must be greater than 1 character.', category="error")
+        elif len(password)< 7:
+            flash('Password must be at least 7 characters.', category="error")
+        else:
 
-        db.session.add(new_user)
-        db.session.commit()
-        login_user(new_user, remember = True)
-        return redirect(url_for("r_user", r_usr = r_user))
-    else:
 
-        return render_template("registration.html", user=current_user)
+            new_user = users(email=email, r_user = r_user, password=password)
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user, remember = True)
+            flash('Account created!', category='success')
+            return redirect(url_for("r_user", r_usr = r_user))
+
+    return render_template("registration.html", user=current_user)
 
 #czemu tutaj bez nakierowanie /r_user strona nie przekierowuje tam a w user zwyklym to dziala
 
@@ -84,4 +106,4 @@ if __name__ == "__main__":
 
 
 
-#TODO naprawic Missing user_loader or request_loader. Refer to http://flask-login.readthedocs.io/#how-it-works for more info.
+    #TODO Ogarnac to troche wyglądowo, baza jest wszysto gra
